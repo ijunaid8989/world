@@ -3,6 +3,8 @@ const fs = require('fs');
 const qrcode = require('qrcode-terminal');
 const { Client } = require('whatsapp-web.js');
 
+const replies = require("./utils/replies")
+
 const SESSION_FILE_PATH = './session.json';
 
 let sessionData;
@@ -14,6 +16,7 @@ if (fs.existsSync(SESSION_FILE_PATH)) {
 console.log(sessionData)
 
 let client = null
+let contactName = null
 
 if (Object.keys(sessionData).length === 0) {
   client = new Client()
@@ -32,9 +35,14 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-	if(message.body === '!ping') {
-		message.reply('pong');
-	}
+  const contact = message.getContact();
+  const name = contact.then(cont => {return cont.pushname})
+
+  if(message.body === '!ping') {
+    name.then(function(contactName) {
+      message.reply(replies.ping(contactName));
+    })
+  }
 });
 
 client.on('authenticated', (session) => {
