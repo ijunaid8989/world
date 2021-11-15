@@ -38,7 +38,16 @@ client.on('message', message => {
   const contact = message.getContact();
   const name = contact.then(cont => {return cont.pushname})
 
+  const chat = message.getChat()
+  const chatDetails = chat.then(ch => {return ch})
+
+
   if(message.body === '!ping') {
+
+    chatDetails.then(function(chat) {
+      chat.sendStateTyping()
+    })
+
     name.then(function(contactName) {
       message.reply(replies.ping(contactName));
     })
